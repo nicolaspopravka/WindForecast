@@ -130,7 +130,8 @@
         "hrsm=2",
         "vt=forecasts",
         "lng=en",
-        "p=WINDSPD,GUST,SMER,TMPE,TCDC,APCP1s,RATING"
+        "idbs=1",
+        "p=WINDSPD,GUST,SMER,RATING"
       ];
       script.src = "https://www.windguru.cz/js/widget.php?" + args.join("&");
       document.getElementById(id).appendChild(script);
