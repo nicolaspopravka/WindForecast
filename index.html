@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>My Wind Forecasts</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      padding: 1rem;
+      background: #f7f9fb;
+      color: #333;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1rem;
+    }
+
+    .spot {
+      background: white;
+      padding: 0.5rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    .selector {
+      margin: 2rem 0 1rem;
+      text-align: center;
+    }
+
+    iframe, .wg-widget {
+      width: 100%;
+      border: none;
+    }
+
+    .short-term {
+      background: white;
+      padding: 1rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      margin-bottom: 2rem;
+    }
+
+    label {
+      font-weight: bold;
+    }
+
+  </style>
+</head>
+<body>
+  <h1>My Wind Forecast Dashboard</h1>
+
+  <h2>🌬️ Long-Term Forecasts (WG)</h2>
+  <div class="grid">
+    <!-- Le Boucanet -->
+    <div class="spot">
+      <h3>Le Boucanet</h3>
+      <div class="wg-widget" id="wg_fwdg_48601_100"></div>
+    </div>
+    <!-- Port Camargue -->
+    <div class="spot">
+      <h3>Port Camargue</h3>
+      <div class="wg-widget" id="wg_fwdg_48603_100"></div>
+    </div>
+    <!-- Le Cavaou -->
+    <div class="spot">
+      <h3>Le Cavaou</h3>
+      <div class="wg-widget" id="wg_fwdg_48611_100"></div>
+    </div>
+    <!-- Le Jaï -->
+    <div class="spot">
+      <h3>Le Jaï</h3>
+      <div class="wg-widget" id="wg_fwdg_334_100"></div>
+    </div>
+    <!-- Carro -->
+    <div class="spot">
+      <h3>Carro</h3>
+      <div class="wg-widget" id="wg_fwdg_342_100"></div>
+    </div>
+    <!-- Almanarre -->
+    <div class="spot">
+      <h3>Almanarre</h3>
+      <div class="wg-widget" id="wg_fwdg_14_100"></div>
+    </div>
+  </div>
+
+  <div class="selector">
+    <h2>🔎 Short-Term Forecast (AROME 1.3km)</h2>
+    <label for="spot-select">Choose a spot:</label>
+    <select id="spot-select">
+      <option value="48601">Le Boucanet</option>
+      <option value="48603">Port Camargue</option>
+      <option value="48611">Le Cavaou</option>
+      <option value="334" selected>Le Jaï</option>
+      <option value="342">Carro</option>
+      <option value="14">Almanarre</option>
+    </select>
+  </div>
+
+  <div class="short-term">
+    <div id="short-term-widget"></div>
+  </div>
+
+  <script>
+    // Define widget loader
+    function loadWindguruWidget(id, spotId, modelId) {
+      const script = document.createElement("script");
+      const args = [
+        `s=${spotId}`,
+        `m=${modelId}`,
+        `uid=${id}`,
+        "wj=knots",
+        "tj=c",
+        "waj=m",
+        "tij=cm",
+        "odh=8",
+        "doh=20",
+        "fhours=240",
+        "hrsm=2",
+        "vt=forecasts",
+        "lng=en",
+        "p=WINDSPD,GUST,SMER,TMPE,TCDC,APCP1s,RATING"
+      ];
+      script.src = "https://www.windguru.cz/js/widget.php?" + args.join("&");
+      document.getElementById(id).appendChild(script);
+    }
+
+    // Load long-term widgets (WG)
+    const longTermSpots = [
+      { spotId: 48601, modelId: 100 },
+      { spotId: 48603, modelId: 100 },
+      { spotId: 48611, modelId: 100 },
+      { spotId: 334,   modelId: 100 },
+      { spotId: 342,   modelId: 100 },
+      { spotId: 14,    modelId: 100 }
+    ];
+
+    longTermSpots.forEach(spot => {
+      const id = `wg_fwdg_${spot.spotId}_${spot.modelId}`;
+      loadWindguruWidget(id, spot.spotId, spot.modelId);
+    });
+
+    // Load short-term widget (AROME 1.3km)
+    const shortTermDiv = document.getElementById("short-term-widget");
+    const select = document.getElementById("spot-select");
+
+    function loadShortTermWidget(spotId) {
+      shortTermDiv.innerHTML = "";
+      const uid = `wg_fwdg_${spotId}_52_st`;
+      const div = document.createElement("div");
+      div.id = uid;
+      shortTermDiv.appendChild(div);
+      loadWindguruWidget(uid, spotId, 52);
+    }
+
+    select.addEventListener("change", () => {
+      loadShortTermWidget(select.value);
+    });
+
+    // Initial load
+    loadShortTermWidget(select.value);
+  </script>
+</body>
+</html>
+
